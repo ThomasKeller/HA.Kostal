@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<VersionPrefix>1.0.2</VersionPrefix>
+		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+		<FileVersion>$(VersionPrefix).0</FileVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HA" Version="1.0.0" />
+		<PackageReference Include="InfluxDB.Client" Version="4.14.0" />
+	</ItemGroup>
+	
+</Project>
