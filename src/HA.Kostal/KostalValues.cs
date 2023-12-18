@@ -50,11 +50,10 @@ public class KostalValues
 
     public Measurement ToMeasurement()
     {
-        var measurement = new Measurement
+        var measurement = new Measurement(MeasureTime)
         {
             Device = "KostalPiko",
-            Quality = QualityInfos.Good,
-            Ticks = MeasureTime.Ticks,
+            Quality = QualityInfos.Good
         };
         measurement.Tags.Add("Status", Status);
         AddValue(measurement.Values, "DownloadTime_ms", DownloadTime_ms);

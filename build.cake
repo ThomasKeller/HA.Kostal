@@ -1,11 +1,13 @@
 var target = Argument("target", "Build");
 var configuration = Argument("configuration", "Release");
 var solutionFolder = "./";
+var serviceFolder = "./src/HA.Kostal.Service";
+var publishFolder = "../../Releases/nuget"
 var outputFolder = "./artifacts";
 
 Task("Clean")
     .Does(() => {
-        CleanDirectory("./build");
+        CleanDirectory(outputFolder);
     });
 
 Task("Restore")
@@ -36,14 +38,24 @@ Task("Test")
 Task("Publish") 
     .IsDependentOn("Build")
     .Does(() => {
-        DotNetPublish(solutionFolder, new DotNetPublishSettings {
+        DotNetPublish(serviceFolder, new DotNetPublishSettings {
+            NoRestore = true,
+            NoBuild = true,
+            Configuration = configuration,
+			OutputDirectory = publishFolder
+        });
+    });
+
+Task("Pack") 
+    .IsDependentOn("Build")
+    .Does(() => {
+        DotNetPack(serviceFolder, new DotNetPackSettings {
             NoRestore = true,
             NoBuild = true,
             Configuration = configuration,
 			OutputDirectory = outputFolder
         });
     });
-
 
 
 RunTarget(target);

@@ -117,25 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="devices" xml:space="preserve">
-    <value />
-  </data>
   <data name="settings" xml:space="preserve">
     <value>{
   "kostal": {
-    "url": "http://192.168.111.4/",
+    "url": "http://192.168.x.x/",
     "user": "pvserver",
     "password": "PASSOWRD",
     "stopDuringSunset": true
   },
   "influxDB": {
-    "url": "http://192.168.111.237:8086/",
+    "url": "http://192.168.x.x:8086/",
     "org": "ORG",
     "bucket": "BUCKET",
-    "token": ""
+    "token": "TOKEN"
   },
   "mqtt": {
-    "host": "192.168.111.51",
+    "host": "192.168.x.x",
     "port": 1883
   }
 }</value>

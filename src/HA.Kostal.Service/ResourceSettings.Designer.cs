@@ -61,30 +61,21 @@ namespace HA.Kostal.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string devices {
-            get {
-                return ResourceManager.GetString("devices", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;kostal&quot;: {
-        ///    &quot;url&quot;: &quot;http://192.168.111.4/&quot;,
+        ///    &quot;url&quot;: &quot;http://192.168.x.x/&quot;,
         ///    &quot;user&quot;: &quot;pvserver&quot;,
         ///    &quot;password&quot;: &quot;PASSOWRD&quot;,
         ///    &quot;stopDuringSunset&quot;: true
         ///  },
         ///  &quot;influxDB&quot;: {
-        ///    &quot;url&quot;: &quot;http://192.168.111.237:8086/&quot;,
+        ///    &quot;url&quot;: &quot;http://192.168.x.x:8086/&quot;,
         ///    &quot;org&quot;: &quot;ORG&quot;,
         ///    &quot;bucket&quot;: &quot;BUCKET&quot;,
-        ///    &quot;token&quot;: &quot;&quot;
+        ///    &quot;token&quot;: &quot;TOKEN&quot;
         ///  },
         ///  &quot;mqtt&quot;: {
-        ///    &quot;host&quot;: &quot;192.168.111.51&quot;,
+        ///    &quot;host&quot;: &quot;192.168.x.x&quot;,
         ///    &quot;port&quot;: 1883
         ///  }
         ///}.

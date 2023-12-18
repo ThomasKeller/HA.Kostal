@@ -1,3 +1,7 @@
+using HA.AppTools;
+using HA.Influx;
+using HA.Mqtt;
+
 namespace HA.Kostal.Service;
 
 public class Program
@@ -7,31 +11,28 @@ public class Program
     public static void Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += ExceptionHandler;
-        var envWorkDir = Environment.GetEnvironmentVariable("WORKDIR", EnvironmentVariableTarget.Process) ?? "";
-        var envLoggingLevel = Environment.GetEnvironmentVariable("LOGGINGLEVEL", EnvironmentVariableTarget.Process) ?? "Information";
-        var appLoggingLevel = LogLevel.Information;
-        if (Enum.TryParse(envLoggingLevel, out LogLevel level))
-            appLoggingLevel = level;
-
+        var appInitSettings = new AppInitSettings();
         var loggerFactory = LoggerFactory.Create(builder => builder
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
-            .AddFilter("ha", appLoggingLevel)
-            .SetMinimumLevel(appLoggingLevel)
-            .AddSimpleConsole(options =>
-            {
+            .AddFilter("ha", appInitSettings.LoggingLevel)
+            .SetMinimumLevel(appInitSettings.LoggingLevel)
+            .AddSimpleConsole(options => {
                 options.SingleLine = true;
                 options.TimestampFormat = "yy-MM-dd HH:mm:ss.fff ";
             }));
-        _logger = loggerFactory.CreateLogger<Program>();
-        _logger.LogInformation("start service");
+        var appSettings = new AppSettings(
+            loggerFactory.CreateLogger<AppSettings>(),
+            appInitSettings);
+        appInitSettings.CheckSettings();
 
         try
         {
-            var components = new Components(loggerFactory);
-            components.Init(envWorkDir);
+            var components = new Components(loggerFactory, appSettings);
             components.EnableConsoleObserver();
 
+            _logger = loggerFactory.CreateLogger<Program>();
+            _logger.LogInformation("start Kostal service");
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services
                     .AddSingleton(components)
@@ -42,7 +43,7 @@ public class Program
         }
         catch (Exception ex)
         {
-            _logger?.LogCritical(ex, "Stopped program because of exception");
+            _logger?.LogCritical(ex, $"Stopped program because of exception: {ex.Message}");
             throw;
         }
     }

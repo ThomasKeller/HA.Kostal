@@ -1,5 +1,4 @@
-﻿using HA;
-using HA.Influx;
+﻿using HA.Influx;
 using HA.Mqtt;
 using HA.Store;
 using System.Text;
@@ -10,12 +9,17 @@ namespace HA.Kostal.Service
     {
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
+        private readonly AppSettings _settings;
         private ConsoleObserver? _consoleObserver;
 
-        public Components(ILoggerFactory loggerFactory)
+        public Components(ILoggerFactory loggerFactory, AppSettings settings)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger<Components>();
+            _settings = settings;
+            InitIKostalComponent(settings.Kostal);
+            InitInfluxComponent(settings.Influx, settings.Application.StoreFilePath);
+            InitMqttComponent(settings.Mqtt);
         }
 
         public KostalObservable? MeasurmentObservable { get; private set; }
@@ -27,16 +31,6 @@ namespace HA.Kostal.Service
         public MeasurementObserver? MqttMeasurementObserver { get; set; }
 
         public MqttPublisher? HealthMqttPublisher { get; private set; }
-
-        public void Init(string workDir = "")
-        {
-            var appSettings = new AppSettings(workDir);
-            appSettings.Read();
-
-            InitIKostalComponent(appSettings);
-            InitInfluxComponent(appSettings);
-            InitMqttComponent(appSettings);
-        }
 
         public void EnableConsoleObserver()
         {
@@ -78,7 +72,7 @@ namespace HA.Kostal.Service
             return status;
         }
 
-        private void InitIKostalComponent(AppSettings appSettings)
+        private void InitIKostalComponent(KostalSettings appSettings)
         {
             MeasurmentObservable = new KostalObservable(
                 _loggerFactory.CreateLogger<KostalObservable>(),
@@ -86,16 +80,16 @@ namespace HA.Kostal.Service
             MeasurmentObservable.StopDuringSunset = appSettings.KostalStopDuringSunset;// envKostalStopDuringNight == "true";
         }
 
-        private void InitInfluxComponent(AppSettings appSettings)
+        private void InitInfluxComponent(InfluxSettings settings, string measurmentStoreFilePath)
         {
             InfluxResilientStore = new InfluxResilientStore(
                 _loggerFactory.CreateLogger<InfluxResilientStore>(),
                 new InfluxSimpleStore(
-                    appSettings.InfluxUrl,
-                    appSettings.InfluxBucket,
-                    appSettings.InfluxOrg,
-                    appSettings.InfluxToken),
-                new MeasurementStore(appSettings.MeasurmentStoreFilePath));
+                    settings.InfluxUrl,
+                    settings.InfluxBucket,
+                    settings.InfluxOrg,
+                    settings.InfluxToken),
+                new MeasurementStore(measurmentStoreFilePath));
             InfluxMeasurementObserver = new MeasurementObserver(
                     _loggerFactory.CreateLogger<MeasurementObserver>(),
                     InfluxResilientStore);
@@ -103,13 +97,13 @@ namespace HA.Kostal.Service
                 InfluxMeasurementObserver.Subscribe(MeasurmentObservable);
         }
 
-        private void InitMqttComponent(AppSettings appSettings)
+        private void InitMqttComponent(MqttSettings settings)
         {
             var mqttPublisher = new MqttPublisher(
                 _loggerFactory.CreateLogger<MqttPublisher>(),
-                appSettings.MqttHost,
-                appSettings.MqttPort,
-                "ha.kostal.service");
+                settings.MqttHost,
+                settings.MqttPort,
+                settings.MqttClientId);
             HealthMqttPublisher = mqttPublisher;
             MqttMeasurementObserver = new MeasurementObserver(
                    _loggerFactory.CreateLogger<MeasurementObserver>(),

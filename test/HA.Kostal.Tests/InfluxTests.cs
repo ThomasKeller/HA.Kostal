@@ -1,4 +1,3 @@
-using HA;
 using HA.Influx;
 
 namespace HA.Kostal.Tests;

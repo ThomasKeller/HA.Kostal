@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="HA" Version="1.0.0" />
+		<PackageReference Include="HA" Version="1.0.15" />
 		<PackageReference Include="InfluxDB.Client" Version="4.14.0" />
 	</ItemGroup>
 	
